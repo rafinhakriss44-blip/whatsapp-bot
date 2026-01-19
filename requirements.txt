@@ -1,2 +1,4 @@
-fastapi
-uvicorn
+streamlit
+supabase
+openai
+python-dotenv
