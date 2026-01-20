@@ -2,7 +2,3 @@ fastapi
 uvicorn
 httpx
 pydantic
-streamlit
-supabase
-openai
-python-dotenv
