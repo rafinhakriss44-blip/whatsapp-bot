@@ -82,7 +82,8 @@ async def send_zapi_message(phone: str, text: str):
         print("FALTANDO ZAPI_INSTANCE ou ZAPI_TOKEN")
         return
 
-    url = f"https://api.z-api.io/instances/{ZAPI_INSTANCE}/token/{ZAPI_TOKEN}/send-text"
+    url = f"https://api.z-api.io/instances/{ZAPI_INSTANCE}/token/{ZAPI_TOKEN}/sendText"
+
     body = {"phone": phone, "message": text}
 
     async with httpx.AsyncClient(timeout=30) as client:
