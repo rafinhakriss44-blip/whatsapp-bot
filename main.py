@@ -1,33 +1,23 @@
 from fastapi import FastAPI, Request
-from pydantic import BaseModel
 import os
 import httpx
 
 app = FastAPI()
 
-OPENAI_API_KEY = os.getenv("OPENAI_API_KEY", "")
-ZAPI_INSTANCE = os.getenv("ZAPI_INSTANCE", "")
-ZAPI_TOKEN = os.getenv("ZAPI_TOKEN", "")
-
-class ChatRequest(BaseModel):
-    message: str
+OPENAI_API_KEY = os.getenv("OPENAI_API_KEY")
+ZAPI_INSTANCE = os.getenv("ZAPI_INSTANCE")
+ZAPI_TOKEN = os.getenv("ZAPI_TOKEN")
 
 @app.get("/")
 def home():
     return {"status": "ok", "message": "bot rodando"}
 
-# --------- TESTE MANUAL (opcional) ----------
-@app.post("/chat")
-async def chat(req: ChatRequest):
-    reply = await generate_reply(req.message)
-    return {"reply": reply}
-
-# --------- WEBHOOK DA Z-API ----------
 @app.post("/zapi")
 async def zapi_webhook(request: Request):
     payload = await request.json()
 
-    # Tenta achar o telefone e a mensagem em vários formatos (porque cada Z-API manda diferente)
+    print("ZAPI payload:", payload)
+
     phone = (
         payload.get("phone")
         or payload.get("from")
@@ -42,26 +32,21 @@ async def zapi_webhook(request: Request):
         or (payload.get("data") or {}).get("message")
         or (payload.get("data") or {}).get("text")
     )
-print("ZAPI payload:", payload)
-print("ZAPI phone:", phone)
-print("ZAPI text:", text)
 
+    print("ZAPI phone:", phone)
+    print("ZAPI text:", text)
 
-    # Se não veio texto, só confirma "ok" (evita quebrar)
     if not phone or not text:
-        return {"ok": True, "note": "sem phone/text no payload"}
+        return {"ok": True}
 
-    # Gera resposta com IA
     reply = await generate_reply(text)
-
-    # Envia resposta pelo Z-API
     await send_zapi_message(phone, reply)
 
     return {"ok": True}
 
 async def generate_reply(user_text: str) -> str:
     if not OPENAI_API_KEY:
-        return "Tô sem sistema agora 😕 tenta de novo já já."
+        return "Tô sem sistema agora, tenta de novo já já 🙏"
 
     headers = {
         "Authorization": f"Bearer {OPENAI_API_KEY}",
@@ -71,15 +56,18 @@ async def generate_reply(user_text: str) -> str:
     payload = {
         "model": "gpt-4.1-mini",
         "input": (
-            "Responda curto, natural e humano, em português do Brasil, como WhatsApp. "
-            "Se faltar informação, faça 1 pergunta curta.\n\n"
+            "Responda como uma pessoa real no WhatsApp, curto, educado e natural, em português.\n\n"
             f"Cliente: {user_text}"
         )
     }
 
     async with httpx.AsyncClient(timeout=30) as client:
-        r = await client.post("https://api.openai.com/v1/responses", headers=headers, json=payload)
-        data = r.json()
+        response = await client.post(
+            "https://api.openai.com/v1/responses",
+            headers=headers,
+            json=payload
+        )
+        data = response.json()
 
     texto = ""
     for item in data.get("output", []):
@@ -87,11 +75,9 @@ async def generate_reply(user_text: str) -> str:
             if c.get("type") == "output_text":
                 texto += c.get("text", "")
 
-    texto = texto.strip()
-    return texto or "Me diz só um detalhe pra eu te responder certinho 😉"
+    return texto.strip() or "Me fala só um detalhe pra eu te responder certinho 😉"
 
 async def send_zapi_message(phone: str, text: str):
-    async def send_zapi_message(phone: str, text: str):
     if not ZAPI_INSTANCE or not ZAPI_TOKEN:
         print("FALTANDO ZAPI_INSTANCE ou ZAPI_TOKEN")
         return
@@ -102,7 +88,4 @@ async def send_zapi_message(phone: str, text: str):
     async with httpx.AsyncClient(timeout=30) as client:
         resp = await client.post(url, json=body)
         print("ZAPI send status:", resp.status_code)
-        try:
-            print("ZAPI send body:", resp.text)
-        except Exception:
-            pass
+        print("ZAPI send body:", resp.text)
