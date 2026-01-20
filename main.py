@@ -98,3 +98,60 @@ async def send_zapi_message(phone: str, text: str):
 
     async with httpx.AsyncClient(timeout=30) as client:
         await client.post(url, json=body)
+from fastapi import Request
+import os
+import httpx
+
+ZAPI_INSTANCE = os.getenv("ZAPI_INSTANCE", "")
+ZAPI_TOKEN = os.getenv("ZAPI_TOKEN", "")
+OPENAI_API_KEY = os.getenv("OPENAI_API_KEY", "")
+
+@app.post("/zapi")
+async def zapi_webhook(request: Request):
+    payload = await request.json()
+
+    phone = payload.get("phone") or payload.get("from") or payload.get("sender")
+    text = payload.get("message") or payload.get("text")
+
+    # Alguns formatos vêm dentro de "data"
+    if not phone or not text:
+        data = payload.get("data") or {}
+        phone = phone or data.get("phone") or data.get("from")
+        text = text or data.get("message") or data.get("text")
+
+    if not phone or not text:
+        return {"ok": True, "note": "sem phone/text"}
+
+    reply = await generate_reply(text)
+    await send_zapi_message(phone, reply)
+    return {"ok": True}
+
+async def generate_reply(user_text: str) -> str:
+    headers = {"Authorization": f"Bearer {OPENAI_API_KEY}", "Content-Type": "application/json"}
+    payload = {
+        "model": "gpt-4.1-mini",
+        "input": f"Responda curto e natural em PT-BR como WhatsApp:\n\nCliente: {user_text}"
+    }
+
+    async with httpx.AsyncClient(timeout=30) as client:
+        r = await client.post("https://api.openai.com/v1/responses", headers=headers, json=payload)
+        data = r.json()
+
+    out = ""
+    for item in data.get("output", []):
+        for c in item.get("content", []):
+            if c.get("type") == "output_text":
+                out += c.get("text", "")
+
+    out = out.strip()
+    return out or "Me fala só um detalhe pra eu te responder certinho 😉"
+
+async def send_zapi_message(phone: str, text: str):
+    if not ZAPI_INSTANCE or not ZAPI_TOKEN:
+        return
+
+    url = f"https://api.z-api.io/instances/{ZAPI_INSTANCE}/token/{ZAPI_TOKEN}/send-text"
+    body = {"phone": phone, "message": text}
+
+    async with httpx.AsyncClient(timeout=30) as client:
+        await client.post(url, json=body)
