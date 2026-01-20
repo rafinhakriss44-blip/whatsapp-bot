@@ -42,7 +42,7 @@ async def zapi_webhook(request: Request):
         or (payload.get("data") or {}).get("message")
         or (payload.get("data") or {}).get("text")
     )
-    print("ZAPI payload:", payload)
+print("ZAPI payload:", payload)
 print("ZAPI phone:", phone)
 print("ZAPI text:", text)
 
