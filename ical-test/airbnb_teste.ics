@@ -6,21 +6,21 @@ METHOD:PUBLISH
 X-WR-CALNAME:Airbnb - Teste
 BEGIN:VEVENT
 UID:airbnb-teste-001@example.local
-DTSTAMP:20260917T120902Z
-DTSTART;VALUE=DATE:20260925
-DTEND;VALUE=DATE:20260928
-SUMMARY:Reserva Airbnb - Teste
-DESCRIPTION:Reserva ficticia criada apenas para testar a sincronizacao do calendario.
+DTSTAMP:20260917T130000Z
+DTSTART;VALUE=DATE:20260926
+DTEND;VALUE=DATE:20260929
+SUMMARY:Reserva Airbnb - Teste atualizado
+DESCRIPTION:Reserva ficticia alterada para validar a atualizacao do calendario.
 STATUS:CONFIRMED
 TRANSP:OPAQUE
 END:VEVENT
 BEGIN:VEVENT
 UID:airbnb-teste-002@example.local
-DTSTAMP:20260917T120902Z
-DTSTART;VALUE=DATE:20261010
-DTEND;VALUE=DATE:20261013
-SUMMARY:Reserva Airbnb - Teste 2
-DESCRIPTION:Segunda reserva ficticia para teste de sincronizacao.
+DTSTAMP:20260917T130000Z
+DTSTART;VALUE=DATE:20261011
+DTEND;VALUE=DATE:20261014
+SUMMARY:Reserva Airbnb - Teste 2 atualizado
+DESCRIPTION:Segunda reserva ficticia alterada para teste de atualizacao.
 STATUS:CONFIRMED
 TRANSP:OPAQUE
 END:VEVENT
