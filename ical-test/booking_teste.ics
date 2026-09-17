@@ -6,21 +6,21 @@ METHOD:PUBLISH
 X-WR-CALNAME:Booking - Teste
 BEGIN:VEVENT
 UID:booking-teste-001@example.local
-DTSTAMP:20260917T120902Z
-DTSTART;VALUE=DATE:20260920
-DTEND;VALUE=DATE:20260923
-SUMMARY:Reserva Booking - Teste
-DESCRIPTION:Reserva ficticia criada apenas para testar a sincronizacao do calendario.
+DTSTAMP:20260917T130000Z
+DTSTART;VALUE=DATE:20260921
+DTEND;VALUE=DATE:20260924
+SUMMARY:Reserva Booking - Teste atualizado
+DESCRIPTION:Reserva ficticia alterada para validar a atualizacao do calendario.
 STATUS:CONFIRMED
 TRANSP:OPAQUE
 END:VEVENT
 BEGIN:VEVENT
 UID:booking-teste-002@example.local
-DTSTAMP:20260917T120902Z
-DTSTART;VALUE=DATE:20261003
-DTEND;VALUE=DATE:20261006
-SUMMARY:Reserva Booking - Teste 2
-DESCRIPTION:Segunda reserva ficticia para teste de sincronizacao.
+DTSTAMP:20260917T130000Z
+DTSTART;VALUE=DATE:20261004
+DTEND;VALUE=DATE:20261007
+SUMMARY:Reserva Booking - Teste 2 atualizado
+DESCRIPTION:Segunda reserva ficticia alterada para teste de atualizacao.
 STATUS:CONFIRMED
 TRANSP:OPAQUE
 END:VEVENT
