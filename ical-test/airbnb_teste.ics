@@ -24,4 +24,14 @@ DESCRIPTION:Segunda reserva ficticia alterada para teste de atualizacao.
 STATUS:CONFIRMED
 TRANSP:OPAQUE
 END:VEVENT
+BEGIN:VEVENT
+UID:airbnb-teste-natal-2026@example.local
+DTSTAMP:20260928T060000Z
+DTSTART;VALUE=DATE:20261225
+DTEND;VALUE=DATE:20270102
+SUMMARY:Reserva teste - Natal e Ano Novo
+DESCRIPTION:Reserva ficticia para validar a leitura do iCal no Reservaê.
+STATUS:CONFIRMED
+TRANSP:OPAQUE
+END:VEVENT
 END:VCALENDAR
